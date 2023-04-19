@@ -1,31 +1,29 @@
+import CustomComponents.myButton;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 public class calcGUI extends JFrame implements ActionListener {
 
-    //Create required objects
     JFrame frame = new JFrame();
     JPanel panel = new JPanel();
     JTextField textField = new JTextField();
 
-    JButton[] numButtons = new JButton[10];
-    JButton[] funcButtons = new JButton[10];
-    JButton addButton, difButton, mulButton, divButton, sqrtButton;
-    JButton decButton, eqlButton, delButton, clrButton, negButton;
-
-    Font font = new Font("Open Sans", Font.PLAIN, 16);
-    Font lcdFont = new Font("DS-Digital", Font.BOLD, 25);
-
+    myButton[] numButtons = new myButton[10];
+    myButton[] funcButtons = new myButton[10];
+    myButton addButton, difButton, mulButton, divButton, sqrtButton;
+    myButton decButton, eqlButton, delButton, clrButton, negButton;
 
     DecimalFormat df = new DecimalFormat("#.#######");
 
     double n1 = 0, n2 = 0, eq = 0;
     char operators;
 
-    //define the method to start the application
     public void calculatorGUI(){
 
         // Configure the main frame
@@ -38,21 +36,28 @@ public class calcGUI extends JFrame implements ActionListener {
         // Configure the text field
         textField.setBounds(50,50,300,50);
         textField.setEditable(false);
-        textField.setFont(lcdFont);
+        try{
+            Font font1 = Font.createFont(Font.PLAIN,
+                            Objects.requireNonNull(getClass().getResourceAsStream("/Fonts/DS-DIGI.TTF")))
+                    .deriveFont(48f);
+            textField.setFont(font1);
+        } catch (IOException | FontFormatException e) {
+            throw new RuntimeException(e);
+        }
         textField.setHorizontalAlignment(SwingConstants.RIGHT);
 
         // Define the functional buttons
-        addButton = new JButton("+");
-        difButton = new JButton("-");
-        mulButton = new JButton("*");
-        divButton = new JButton("/");
+        addButton = new myButton("+");
+        difButton = new myButton("-");
+        mulButton = new myButton("*");
+        divButton = new myButton("/");
 
-        decButton = new JButton(".");
-        eqlButton = new JButton("=");
-        delButton = new JButton("DEL");
-        clrButton = new JButton("CLR");
-        negButton = new JButton("(-)");
-        sqrtButton = new JButton("sqrt");
+        decButton = new myButton(".");
+        eqlButton = new myButton("=");
+        delButton = new myButton("DEL");
+        clrButton = new myButton("CLR");
+        negButton = new myButton("(-)");
+        sqrtButton = new myButton("sqrt");
 
         // Adding the functional buttons to an array
         funcButtons[0] = addButton;
@@ -66,31 +71,12 @@ public class calcGUI extends JFrame implements ActionListener {
         funcButtons[8] = negButton;
         funcButtons[9] = sqrtButton;
 
-        // Configure the functional buttons
+        // Add events to individual components
         for (int i = 0; i < 10; i++) {
+            numButtons[i] = new myButton(String.valueOf(i));
             funcButtons[i].addActionListener(this);
-            funcButtons[i].setFocusable(false);
-            funcButtons[i].setBackground(Color.decode("#F5F5F5"));
-            funcButtons[i].setForeground(Color.decode("#4D4D4D"));
-            funcButtons[i].setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            funcButtons[i].setFont(font);
-            funcButtons[i].setBorder(BorderFactory.createLineBorder(Color.decode("#D9D9D9")));
-            funcButtons[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
-
-        // Configure the number buttons
-        for (int i = 0; i < 10; i++) {
-            numButtons[i] = new JButton(String.valueOf(i));
             numButtons[i].addActionListener(this);
-            numButtons[i].setFocusable(false);
-            numButtons[i].setBackground(Color.decode("#F5F5F5"));
-            numButtons[i].setForeground(Color.decode("#4D4D4D"));
-            numButtons[i].setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            numButtons[i].setFont(font);
-            numButtons[i].setBorder(BorderFactory.createLineBorder(Color.decode("#D9D9D9")));
-            numButtons[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
-
 
         // Configure the panel
         panel.setBounds(50, 150, 300, 300);
@@ -102,17 +88,17 @@ public class calcGUI extends JFrame implements ActionListener {
         panel.add(delButton);
         panel.add(clrButton);
 
-        panel.add(numButtons[1]);
-        panel.add(numButtons[2]);
-        panel.add(numButtons[3]);
+        for (int i = 0; i < 4; i++) {
+            panel.add(numButtons[i]);
+        }
         panel.add(addButton);
-        panel.add(numButtons[4]);
-        panel.add(numButtons[5]);
-        panel.add(numButtons[6]);
+        for (int i = 4; i < 7; i++) {
+            panel.add(numButtons[i]);
+        }
         panel.add(difButton);
-        panel.add(numButtons[7]);
-        panel.add(numButtons[8]);
-        panel.add(numButtons[9]);
+        for (int i = 7; i < 10; i++) {
+            panel.add(numButtons[i]);
+        }
         panel.add(mulButton);
         panel.add(decButton);
         panel.add(numButtons[0]);
@@ -126,7 +112,6 @@ public class calcGUI extends JFrame implements ActionListener {
 
     }
 
-    // This method is called when any button is pressed
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -148,7 +133,6 @@ public class calcGUI extends JFrame implements ActionListener {
             }
         }
 
-        // check if negative button is pressed
         if (e.getSource() == negButton) {
             textCurrent = textField.getText();
             // if the current value doesn't start with a "-", add one
@@ -161,7 +145,6 @@ public class calcGUI extends JFrame implements ActionListener {
             textField.setText(textCurrent);
         }
 
-        // check if decimal button is pressed
         if (e.getSource() == decButton) {
             textCurrent = textField.getText();
             // if the current value does not contain ".", add one
@@ -170,72 +153,53 @@ public class calcGUI extends JFrame implements ActionListener {
             }
         }
 
-        //check if the sqrt button is pressed
         if (e.getSource() == sqrtButton) {
             textCurrent = textField.getText();
             eq = Math.sqrt(Double.parseDouble(textCurrent));
             textField.setText(String.valueOf(df.format(eq)));
         }
 
-        // check if the add button is pressed
         if (e.getSource() == addButton) {
             n1 = Double.parseDouble(textField.getText());
             operators = '+';
             textField.setText("");
         }
 
-        // check if the subract button is pressed
         if (e.getSource() == difButton) {
             n1 = Double.parseDouble(textField.getText());
             operators = '-';
             textField.setText("");
         }
 
-        // check if the multiply button is pressed
         if (e.getSource() == mulButton) {
             n1 = Double.parseDouble(textField.getText());
             operators = '*';
             textField.setText("");
         }
 
-        // check if the divide button is pressed
         if (e.getSource() == divButton) {
             n1 = Double.parseDouble(textField.getText());
             operators = '/';
             textField.setText("");
         }
 
-        // check if the equal button is pressed
         if (e.getSource() == eqlButton) {
             n2 = Double.parseDouble(textField.getText());
 
-
-            // perform the corresponding operation based on the operator variable
             switch (operators) {
-                case '+':
-                    eq = n1 + n2;
-                    break;
-                case '-':
-                    eq = n1 - n2;
-                    break;
-                case '*':
-                    eq = n1 * n2;
-                    break;
-                case '/':
-                    eq = n1 / n2;
-                    break;
+                case '+' -> eq = n1 + n2;
+                case '-' -> eq = n1 - n2;
+                case '*' -> eq = n1 * n2;
+                case '/' -> eq = n1 / n2;
             }
 
-            // format the result using DecimalFormat
             textField.setText(String.valueOf(df.format(eq)));
         }
 
-        // check if clear button is pressed
         if (e.getSource() == clrButton) {
             textField.setText("");
         }
 
-        // check if delete button is pressed
         if (e.getSource() == delButton) {
             textCurrent = textField.getText();
             // if the current value contains at least one character, remove the last character
@@ -245,10 +209,5 @@ public class calcGUI extends JFrame implements ActionListener {
             }
         }
 
-    }
-
-    public static void main(String[] args) {
-        calcGUI gui = new calcGUI();
-        gui.calculatorGUI();
     }
 }
