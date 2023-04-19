@@ -14,6 +14,8 @@ public class calcGUI extends JFrame implements ActionListener {
     JPanel panel = new JPanel();
     JTextField textField = new JTextField();
 
+//    ImageIcon ico = new ImageIcon("/Icons/keys.png");
+
     myButton[] numButtons = new myButton[10];
     myButton[] funcButtons = new myButton[10];
     myButton addButton, difButton, mulButton, divButton, sqrtButton;
@@ -24,9 +26,11 @@ public class calcGUI extends JFrame implements ActionListener {
     double n1 = 0, n2 = 0, eq = 0;
     char operators;
 
+
     public void calculatorGUI(){
 
         // Configure the main frame
+        frame.setIconImage(new ImageIcon("./src/Icons/calculator.png").getImage());
         frame.setTitle("Calculator");
         frame.setSize(420, 550);
         frame.setLayout(null);
